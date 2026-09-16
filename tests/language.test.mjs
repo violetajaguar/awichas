@@ -32,7 +32,7 @@ test('voices: an Awicha with only one recording plays it in both modes', () => {
   assert.equal(voiceLanguage(englishOnly, 'es'), 'en')
 })
 
-// The recordings, the portraits and the written stories are Chalena's work and are not in the public
+// The recordings, the portraits and the written stories are the artist's work and are not in the public
 // repository, so these two check them only when they are actually here.
 const ART_PRESENT = existsSync(new URL('../voice-scripts/jaguar.en.txt', import.meta.url))
 
