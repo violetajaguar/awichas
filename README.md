@@ -329,3 +329,11 @@ The folder above this one is the 8th Wall export. It cannot be revived as-is: th
 contains no hand tracking (four experiences depended on it), the open-source 8th Wall engine also
 excludes hand tracking and SLAM, image targets were never registered in the export's `app.js`, and
 several scenes referenced `cdn.8thwall.com` for the Draco decoder. This rebuild replaces all of it.
+
+## Licence
+
+The code is MIT (see `LICENSE`), so you are free to build on it.
+
+That covers the code only. The artwork is not in this repository and is not MIT: the portraits, the 3D
+animals, the recordings and the written stories remain the artist's, all rights reserved. The third-party
+pieces keep their own licences, all permissive: MindAR and three.js are MIT, MediaPipe is Apache-2.0.
