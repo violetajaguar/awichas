@@ -1,0 +1,26 @@
+{
+  "name": "las-awichas",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Las Awichas WebAR: robotic animals step out of their portraits and onto your hand. Open-source stack (MindAR image tracking + MediaPipe hand tracking + three.js).",
+  "type": "module",
+  "scripts": {
+    "dev": "node tools/prepare-runtime.mjs && vite --host",
+    "build": "node tools/prepare-runtime.mjs && vite build && node tools/precompress.mjs",
+    "preview": "vite preview --host",
+    "test": "node --test tests/",
+    "compile-targets": "node tools/compile-targets.mjs",
+    "prepare-runtime": "node tools/prepare-runtime.mjs"
+  },
+  "dependencies": {
+    "@mediapipe/tasks-vision": "1.0.1",
+    "mind-ar": "1.2.5",
+    "three": "0.160.1"
+  },
+  "devDependencies": {
+    "@gltf-transform/cli": "^4.5.0",
+    "@vitejs/plugin-basic-ssl": "^2.0.0",
+    "playwright-core": "^1.50.0",
+    "vite": "^7.0.0"
+  }
+}

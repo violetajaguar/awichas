@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Las Awichas · image target compiler</title>
+  <style>
+    body { font: 15px/1.5 system-ui, sans-serif; background: #111; color: #eee; margin: 0; padding: 24px; max-width: 720px; }
+    button, input { font: inherit; }
+    #log { white-space: pre-wrap; background: #000; padding: 12px; border-radius: 8px; min-height: 120px; }
+    a.dl { color: #d8c48a; }
+  </style>
+</head>
+<body>
+  <h1>Image target compiler</h1>
+  <p>Pick one or more portrait images. Each becomes a <code>.mind</code> file to save into <code>public/targets/</code>
+    (one target per file; name it after the animal id, e.g. <code>gecko.mind</code>).
+    <code>npm run compile-targets</code> runs this page headlessly for all animals.</p>
+  <input id="files" type="file" accept="image/*" multiple />
+  <div id="links"></div>
+  <pre id="log"></pre>
+
+  <script type="module">
+    import '../node_modules/mind-ar/dist/mindar-image.prod.js'
+
+    const MAX_SIDE = 1000  // MindAR works best with targets around 1000px; bigger only slows compilation
+    const log = (msg) => { document.getElementById('log').textContent += msg + '\n' }
+
+    async function loadImage(src) {
+      const img = new Image()
+      img.crossOrigin = 'anonymous'
+      await new Promise((res, rej) => { img.onload = res; img.onerror = () => rej(new Error('cannot load ' + src)); img.src = src })
+      const scale = Math.min(1, MAX_SIDE / Math.max(img.naturalWidth, img.naturalHeight))
+      if (scale === 1) return img
+      const canvas = document.createElement('canvas')
+      canvas.width = Math.round(img.naturalWidth * scale)
+      canvas.height = Math.round(img.naturalHeight * scale)
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height)
+      const out = new Image()
+      await new Promise((res) => { out.onload = res; out.src = canvas.toDataURL('image/jpeg', 0.92) })
+      return out
+    }
+
+    // Compile one image (or a list: one .mind holding several targets, in that order).
+    // Exposed on window for the headless runner.
+    window.compileTarget = async function (src, onProgress = () => {}) {
+      const imgs = await Promise.all((Array.isArray(src) ? src : [src]).map(loadImage))
+      const img = imgs[0]
+      const compiler = new window.MINDAR.IMAGE.Compiler()
+      const t0 = performance.now()
+      const data = await compiler.compileImageTargets(imgs, (p) => onProgress(p))
+      const buffer = compiler.exportData()
+      const stats = data.map(d => ({
+        width: d.targetImage.width, height: d.targetImage.height,
+        matchingKeyframes: d.matchingData.length,
+        trackingKeyframes: d.trackingData.length,
+        featurePoints: d.matchingData.reduce((n, k) => n + (k.maximaPoints?.length || 0) + (k.minimaPoints?.length || 0), 0),
+      }))
+      return {buffer, stats, ms: Math.round(performance.now() - t0), size: `${img.width}x${img.height}`}
+    }
+
+    window.compileTargetBase64 = async function (src) {
+      const r = await window.compileTarget(src)
+      const bytes = new Uint8Array(r.buffer)
+      let bin = ''
+      for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000))
+      return {base64: btoa(bin), stats: r.stats, ms: r.ms, size: r.size}
+    }
+
+    document.getElementById('files').addEventListener('change', async (e) => {
+      for (const file of e.target.files) {
+        const url = URL.createObjectURL(file)
+        log(`compiling ${file.name}…`)
+        try {
+          const r = await window.compileTarget(url, p => { if (Math.round(p) % 25 === 0) log(`  ${Math.round(p)}%`) })
+          const blob = new Blob([r.buffer], {type: 'application/octet-stream'})
+          const a = document.createElement('a')
+          a.className = 'dl'
+          a.href = URL.createObjectURL(blob)
+          a.download = file.name.replace(/\.[^.]+$/, '') + '.mind'
+          a.textContent = `download ${a.download} (${(blob.size / 1024).toFixed(0)} KB)`
+          document.getElementById('links').append(a, document.createElement('br'))
+          log(`  done in ${r.ms} ms, ${r.size}, ${JSON.stringify(r.stats[0])}`)
+        } catch (err) {
+          log('  failed: ' + err.message)
+        }
+      }
+    })
+    log('ready')
+  </script>
+</body>
+</html>

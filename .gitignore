@@ -1,0 +1,26 @@
+node_modules/
+dist/
+.DS_Store
+smoke-out/
+
+# Never publish: the ElevenLabs key lives here
+.env
+
+# Vendor runtime, copied in by `npm run prepare-runtime` (part of `npm run build`)
+public/decoders/
+public/mediapipe/
+
+# ---------------------------------------------------------------------------
+# The artwork. The code in this repository is public; the portraits, the 3D
+# animals, the recordings and the written stories are not ours to publish, so
+# they are kept out of it. See "Getting the artwork" in README.md.
+# ---------------------------------------------------------------------------
+public/models/
+public/audio/
+public/cards/
+public/thumbs/
+public/targets/
+target-sources/
+voice-es/
+voice-recordings/
+voice-scripts/

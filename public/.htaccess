@@ -1,0 +1,87 @@
+# Las Awichas on Apache (DreamHost shared hosting, and any other Apache host).
+# Vite copies this file out of public/ into dist/, so it travels with the site: upload the contents
+# of dist/ and nothing else has to be configured on the server.
+#
+# Every directive is wrapped in <IfModule> so a host missing one of these modules still serves the
+# site instead of returning 500.
+
+# ---------------------------------------------------------------- HTTPS
+# The camera and MediaPipe only run in a secure context: over plain http the welcome screen appears
+# and the camera then refuses to open. Turn on the free Let's Encrypt certificate in the DreamHost
+# panel as well; this only sends visitors to the secure address.
+# The X-Forwarded-Proto test stops this looping when something in front (Cloudflare) ends the TLS.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# ---------------------------------------------------------------- media types
+# Without application/wasm the browser cannot compile MediaPipe's runtime as it downloads and drops
+# to a slower path. The others are here so Apache does not have to guess.
+<IfModule mod_mime.c>
+  AddType application/wasm          .wasm
+  AddType model/gltf-binary         .glb
+  AddType audio/mpeg                .mp3
+  AddType audio/mp4                 .m4a
+  AddType application/octet-stream  .mind
+  AddType application/octet-stream  .task
+
+  # `npm run build` writes a .gz twin next to each large compressible file. Apache reads the double
+  # extension: main-abc123.js.gz is sent as application/javascript with Content-Encoding: gzip.
+  AddEncoding gzip .gz
+</IfModule>
+
+# ---------------------------------------------------------------- compression
+# Hand out the precompressed twin when the phone accepts gzip. This is worth roughly 16 MB on a first
+# visit (the WebAssembly runtime alone drops from 11 MB to 3 MB) and costs the server nothing, because
+# the compressing already happened at build time. Shared hosting cannot afford to gzip 20 MB per
+# visitor on the fly, which is why the files are prepared in advance rather than with mod_deflate.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTP:Accept-Encoding} gzip
+  RewriteCond %{REQUEST_FILENAME}.gz -f
+  RewriteRule ^(.+)$ $1.gz [L]
+</IfModule>
+
+# Caches and proxies must not hand a gzipped file to a client that did not ask for one.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(js|css|html|wasm|mind|glb|task|svg|json)(\.gz)?$">
+    Header append Vary Accept-Encoding
+  </FilesMatch>
+</IfModule>
+
+# Anything that slipped through without a .gz twin, and is small enough to be cheap, is still worth
+# compressing on the way out.
+# AddOutputFilterByType belongs to mod_filter, not mod_deflate, so both have to be present: guarding
+# on mod_deflate alone makes a host that lacks mod_filter answer 500 for the whole site.
+<IfModule mod_deflate.c>
+<IfModule mod_filter.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css
+  AddOutputFilterByType DEFLATE application/javascript text/javascript
+  AddOutputFilterByType DEFLATE application/json image/svg+xml
+</IfModule>
+</IfModule>
+
+# ---------------------------------------------------------------- caching
+# The page itself is always re-checked, so a new upload is picked up at once.
+# The code and the MediaPipe runtime carry a version in their name or their folder: they can be kept
+# for a year. The portraits, models and recordings keep their names when you replace them, so they
+# are held for a week only - long enough to help a returning visitor, short enough that a re-export
+# reaches phones without anyone having to clear anything.
+<IfModule mod_headers.c>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <FilesMatch "\.(js|css|wasm|task)(\.gz)?$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.(glb|mp3|m4a|jpg|jpeg|png)(\.gz)?$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+  # The tracking targets change whenever a print is re-compiled: keep these on a short leash.
+  <FilesMatch "\.mind(\.gz)?$">
+    Header set Cache-Control "public, max-age=86400"
+  </FilesMatch>
+</IfModule>

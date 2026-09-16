@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <title>Las Awichas</title>
+  <meta name="description" content="In Las Awichas, Grandmothers weave magic into robotic animals, from nimble geckos to majestic jaguars, each ready to unveil their secrets to you." />
+  <meta property="og:title" content="Las Awichas" />
+  <meta property="og:description" content="Robotic animals step out of their portraits and onto your hand. A WebAR experience." />
+  <meta name="theme-color" content="#7eff00" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%237eff00'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="src/experience.css" />
+</head>
+<body>
+  <div id="ar"></div>
+
+  <a class="home" href="index.html" aria-label="Back to the start">‹</a>
+  <div id="hint" hidden></div>
+
+  <div id="actions">
+    <button id="replay" class="btn" hidden>Hear her again</button>
+    <button id="summon" class="btn primary" hidden>Call her to my hand</button>
+    <button id="back-to-portrait" class="btn" hidden>Back to the portrait</button>
+  </div>
+
+  <!-- The welcome screen. Its button starts the camera on this same page: one tap, which is also what lets
+       the phone play sound. index.html?camera=1 skips this screen and opens the camera as the page loads. -->
+  <section id="intro" class="welcome">
+    <header class="bar">
+      <h1>Las Awichas</h1>
+      <div id="language" class="lang-switch" role="group" aria-label="Language / Idioma"></div>
+    </header>
+    <main>
+      <div class="lede" lang="en">
+        <p>
+          In Quechua philosophy, time is continuous: the future lies behind us, because we have not seen it yet,
+          and the past is visible in front of us. Welcome to Las Awichas, my imaginary female ancestors, who walked
+          across the land where the Bering Strait is today, more than 20,000 years ago, to found our continent.
+        </p>
+      </div>
+      <div class="lede" lang="es" hidden>
+        <p>
+          En la filosofía quechua, el tiempo es continuo: el futuro está detrás de nosotros, porque todavía no lo hemos
+          visto, y el pasado es visible al frente de nosotros. Bienvenidos a Las Awichas, mis imaginarias ancestras
+          femeninas, que cruzaron a pie por donde hoy está el estrecho de Bering, hace más de 20,000 años, para
+          fundar nuestro continente.
+        </p>
+      </div>
+      <h2 id="intro-title" hidden>Las Awichas</h2>
+      <img id="intro-card" class="art" alt="The portrait to scan" width="900" height="864" />
+      <p id="intro-text"></p>
+      <button id="start" class="btn primary">Start the camera</button>
+    </main>
+  </section>
+
+  <section id="loading" class="overlay" hidden>
+    <div class="spinner"></div>
+    <p id="loading-text">Preparing…</p>
+  </section>
+
+  <section id="error" class="overlay" hidden>
+    <h1 id="error-title">Something went wrong</h1>
+    <p id="error-text"></p>
+    <button id="retry" class="btn primary">Try again</button>
+  </section>
+
+  <script type="module" src="src/experience.js"></script>
+</body>
+</html>
