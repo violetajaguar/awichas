@@ -98,7 +98,6 @@ function applyUiLanguage() {
   document.title = TOUR ? 'Las Awichas' : `${titleOf(single)} · Las Awichas`
   el.introTitle.textContent = TOUR ? 'Las Awichas' : titleOf(single)
   el.introTitle.hidden = TOUR                                   // in the tour the green bar already says it
-  for (const p of document.querySelectorAll('.lede[lang]')) p.hidden = !TOUR || p.lang !== lang
   el.introText.textContent = TOUR ? T().introTour : T().introSingle
   el.start.textContent = T().start
   el.replay.textContent = T().replay
