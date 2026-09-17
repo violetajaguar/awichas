@@ -41,8 +41,14 @@ const T = () => TEXT[lang] || TEXT.en
 const titleOf = cfg => (lang === 'es' && cfg.titleEs) || cfg.title
 const TEXT = {
   en: {
-    introTour: 'Point your camera at any of the eight printed portraits. Each Awicha steps out of her picture; hold out your open hand and she comes to you. Then walk on to the next portrait.',
-    introSingle: 'Point your camera at this printed portrait. When she appears, hold out your open hand and she will come to you.',
+    // One line at a time on the welcome screen, so it reads as steps rather than a paragraph.
+    introTour: ['Point your camera at one of the eight portraits.',
+                'Each Awicha steps out of her picture.',
+                'Hold out your open hand and she comes to you.',
+                'Then walk on to the next portrait.'],
+    introSingle: ['Point your camera at this printed portrait.',
+                  'When she appears, hold out your open hand.',
+                  'She will come to you.'],
     start: 'Start the camera', replay: 'Hear her again', summon: 'Call her to my hand', back: 'Back to the portrait',
     retry: 'Try again', errorTitle: 'Something went wrong', home: 'Back to Las Awichas', preparing: 'Preparing…',
     startingCamera: 'Starting the camera…', loadingHands: 'Loading hand tracking…',
@@ -54,8 +60,13 @@ const TEXT = {
     handLost: 'Show your open palm again, or point at the portrait to send her back',
   },
   es: {
-    introTour: 'Apunta tu cámara a cualquiera de los ocho retratos impresos. Cada Awicha sale de su foto; extiende la mano abierta y vendrá hacia ti. Después sigue camino al siguiente retrato.',
-    introSingle: 'Apunta tu cámara a este retrato impreso. Cuando aparezca, extiende la mano abierta y vendrá hacia ti.',
+    introTour: ['Apunta tu cámara a uno de los ocho retratos.',
+                'Cada Awicha sale de su foto.',
+                'Extiende la mano abierta y vendrá hacia ti.',
+                'Después sigue camino al siguiente retrato.'],
+    introSingle: ['Apunta tu cámara a este retrato impreso.',
+                  'Cuando aparezca, extiende la mano abierta.',
+                  'Vendrá hacia ti.'],
     start: 'Iniciar la cámara', replay: 'Escúchala otra vez', summon: 'Llámala a mi mano', back: 'Volver al retrato',
     retry: 'Reintentar', errorTitle: 'Algo salió mal', home: 'Volver a Las Awichas', preparing: 'Preparando…',
     startingCamera: 'Iniciando la cámara…', loadingHands: 'Cargando el seguimiento de manos…',
@@ -98,7 +109,11 @@ function applyUiLanguage() {
   document.title = TOUR ? 'Las Awichas' : `${titleOf(single)} · Las Awichas`
   el.introTitle.textContent = TOUR ? 'Las Awichas' : titleOf(single)
   el.introTitle.hidden = TOUR                                   // in the tour the green bar already says it
-  el.introText.textContent = TOUR ? T().introTour : T().introSingle
+  el.introText.replaceChildren(...(TOUR ? T().introTour : T().introSingle).map((line) => {
+    const span = document.createElement('span')
+    span.textContent = line
+    return span
+  }))
   el.start.textContent = T().start
   el.replay.textContent = T().replay
   el.summon.textContent = T().summon
