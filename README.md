@@ -4,6 +4,10 @@ Eight robotic Awichas step out of their printed portraits and, when you hold out
 come to sit on your palm. This is the rebuild of the original 8th Wall project on a fully
 open-source stack, so it keeps working after the 8th Wall hosted platform disappears.
 
+### ▶ Try it: **[awichas.koa.xyz](https://awichas.koa.xyz/)**
+
+Open it on a phone, allow the camera, and point it at one of the printed portraits. Nothing to install.
+
 **Las Awichas, 2024 © Violeta Ayala.** A work by Violeta Ayala, Bolivian-Australian Quechua
 filmmaker, artist and technologist. The first version was hand-coded in 2024 and shown through
 [GLoW: Illuminating Innovation at King's College London](https://www.kcl.ac.uk/research/las-awichas-2024-c-violeta-ayala).
@@ -66,21 +70,23 @@ The hand-tracking runtime and model are not kept here either, but those are Goog
 ## Putting it online
 
 The site is static: `npm run build` writes everything into `dist/` and any HTTPS host can serve it.
-Three ways, easiest first:
+Easiest first:
 
 1. **Netlify Drop (no account setup, 2 minutes).** Run `npm run build`, open
    https://app.netlify.com/drop and drag the `dist` folder onto the page. You get an
    `https://….netlify.app` address immediately; rename it in Site settings. Re-drag `dist` after
    every change. `netlify.toml` in this folder adds sensible cache headers if you connect a repo instead.
-2. **GitHub Pages.** Put this folder in a GitHub repository (branch `main`), then in the repository's
-   Settings → Pages set Source to "GitHub Actions". The workflow in `.github/workflows/deploy-pages.yml`
-   builds and publishes on every push; the address is `https://<user>.github.io/<repo>/`.
-3. **DreamHost, or any other Apache host.** Upload the contents of `dist/` (including the dotfile
+2. **DreamHost, or any other Apache host.** Upload the contents of `dist/` (including the dotfile
    `.htaccess`) to the domain's web directory. See below.
-4. **Anywhere else.** Any web server with HTTPS will do: no server code and no special headers are
+3. **Anywhere else.** Any web server with HTTPS will do: no server code and no special headers are
    required. The camera does not work over plain `http://`.
 
 Whatever the host, keep the printed portraits and the files in `public/targets/` in sync.
+
+**Not from a clone of this repository.** The artwork is not in here, so a build made from a fresh clone
+deploys a site that opens the camera and then has nothing to find: no portraits, no animals, no voices.
+There is deliberately no CI deployment for that reason. The live site above is built from a checkout
+that has the artwork in place.
 
 ### DreamHost (Apache)
 
