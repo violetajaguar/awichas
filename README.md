@@ -4,6 +4,12 @@ Eight robotic Awichas step out of their printed portraits and, when you hold out
 come to sit on your palm. This is the rebuild of the original 8th Wall project on a fully
 open-source stack, so it keeps working after the 8th Wall hosted platform disappears.
 
+**Las Awichas, 2024 © Violeta Ayala.** A work by Violeta Ayala, Bolivian-Australian Quechua
+filmmaker, artist and technologist. The first version was hand-coded in 2024 and shown through
+[GLoW: Illuminating Innovation at King's College London](https://www.kcl.ac.uk/research/las-awichas-2024-c-violeta-ayala).
+The Awichas are her imaginary female ancestors, who walked across the land where the Bering Strait
+is today to found the continent.
+
 | Part | Library | License |
 | --- | --- | --- |
 | Image tracking (the portraits) | [MindAR](https://github.com/hiukim/mind-ar-js) 1.2.5 | MIT |
@@ -335,5 +341,6 @@ several scenes referenced `cdn.8thwall.com` for the Draco decoder. This rebuild 
 The code is MIT (see `LICENSE`), so you are free to build on it.
 
 That covers the code only. The artwork is not in this repository and is not MIT: the portraits, the 3D
-animals, the recordings and the written stories remain the artist's, all rights reserved. The third-party
+animals, the recordings and the written stories are **Las Awichas, 2024 © Violeta Ayala**, all rights
+reserved, and may not be reused without her permission. The third-party
 pieces keep their own licences, all permissive: MindAR and three.js are MIT, MediaPipe is Apache-2.0.
