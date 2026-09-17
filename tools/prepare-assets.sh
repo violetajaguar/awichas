@@ -25,7 +25,13 @@ cp $M/llama_All_Compressed-Ultimate.glb         public/models/llama.glb
 cp $M/llama_idle_Compressed-Ultimate.glb        public/models/llama-idle.glb
 
 # Voices + soundtrack (soundtrack re-encoded 128k mp3 -> 64k AAC, ~half the size)
-for a in gecko spider monkey hummingbird condor whale jaguar llama; do cp $A/${a}_voice.mp3 public/audio/$a.mp3; done
+# English narration: the 2026 re-recording in ../New Voice, not the original 8th Wall take in $A.
+# (The originals are still there as $A/<animal>_voice.mp3 if you ever want them back.)
+NV=$X/New\ Voice
+for pair in jaguar:Jaguarra monkey:Monk gecko:Geka whale:Ballenita condor:Condoress llama:Llamita hummingbird:Humi spider:Spidere; do
+  a=${pair%%:*}; f=${pair#*:}
+  cp "$NV/$f.mp3" public/audio/$a.mp3
+done
 ffmpeg -nostdin -loglevel error -y -i $A/01_Amazonia_compressed.mp3 -c:a aac -b:a 64k public/audio/amazonia.m4a
 
 # Portrait cards: 800px preview for the "scan this" overlay, 1200px source for the target compiler
